@@ -1,0 +1,22 @@
+#!/bin/bash
+
+for f in $@
+do
+  if [ ! -e "$f" ]; then
+    echo "Can't find '$f'. Did you spell it right?"
+  else
+    if [ "${f: -7}" == ".sketch" ]; then
+      echo "Unpacking '$f'..."
+      zipname=${f/.sketch/.zip}
+      noext=${f:0:${#f}-7}
+      mv $f $zipname
+      unzip -o $zipname -d $noext/
+      rm -rf $zipname
+    else
+      echo "Packing '$f'..."
+      cd $f && zip $f.zip -r .
+      cp $f.zip ../$f.sketch
+      cd .. && rm -rf $f
+    fi
+  fi
+done
